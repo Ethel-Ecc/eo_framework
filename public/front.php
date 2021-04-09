@@ -6,11 +6,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 $request = Request::createFromGlobals();
-$response = new Response();
 
 $siteMapper = [
     '/hello' => 'hello',
-    '/tschuss' => 'tschuss'
+    '/bye' => 'bye'
 ];
 
 $path = $request->getPathInfo();
