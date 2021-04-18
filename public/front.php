@@ -1,26 +1,28 @@
 <?php
-
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+
 
 $request = Request::createFromGlobals();
+$routes = include __DIR__.'/../src/app.php';
 
-$siteMapper = [
-    '/hello' => 'hello',
-    '/bye' => 'bye'
-];
+$context = new RequestContext();
+$context->fromRequest($request);
+$matcher = new UrlMatcher($routes, $context);
 
-$path = $request->getPathInfo();
+try{
+    $request->attributes->add($matcher->match($request->getPathInfo()));
+    $response = call_user_func('render_template', $request);
 
-if(isset($siteMapper[$path])){
-    ob_start();
-    extract($request->query->all(), EXTR_SKIP);
-    include sprintf(__DIR__.'/../src/pages/%s.php', $siteMapper[$path]);
-    $response = new Response(ob_get_clean());
-}else{
-    $response = new Response('The requested Page is not found', 404);
+}catch (Routing\Exception\ResourceNotFoundException $exception){
+    $response = new Response('The page you are looking for does not exist', 404);
+}catch (Exception $exception) {
+    $response = new Response('An error Occurred',  500);
 }
 
+$response->prepare($request);
 $response->send();

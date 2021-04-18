@@ -1,5 +1,4 @@
 <?php
-// eo_framework test for index.php
 
 use PHPUnit\Framework\TestCase;
 
@@ -11,8 +10,7 @@ class IndexTest extends TestCase
         $_GET['name'] = 'Ethelbert';
 
         ob_start();
-        include 'index.php';
-
+        include "hello.php";
         $content = ob_get_clean();
 
         $this->assertEquals('Hello Ethelbert', $content);
